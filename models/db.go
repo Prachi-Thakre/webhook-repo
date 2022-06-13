@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"log"
+	"time"
 
 	"fmt"
 
@@ -21,12 +22,21 @@ type mongodbConnectionType struct {
 	isconnected bool
 }
 
+type Doc struct {
+	RequestId  string    `json:"request_id"`
+	Author     string    `json:"author"`
+	Action     string    `json:"action"`
+	FromBranch string    `json:"from_branch"`
+	ToBranch   string    `json:"to_branch"`
+	Time       time.Time `json:"time"`
+}
+
 var MongoDbConnection = &mongodbConnectionType{}
 
 func (db *mongodbConnectionType) ConnectMongodb() error {
 
 	if !db.isconnected {
-		mongodb := util.GetConfig().Mongodb
+		mongodb := util.GetConfig()
 		host := mongodb["url"].(string)
 		fmt.Println(host)
 
@@ -55,7 +65,7 @@ func (db *mongodbConnectionType) InserOneDoc(doc interface{}) error {
 	if !db.isconnected {
 		db.ConnectMongodb()
 	}
-	mongodb := util.GetConfig().Mongodb
+	mongodb := util.GetConfig()
 	database := mongodb["database"].(string)
 	collection := mongodb["collecton"].(string)
 	client := db.MongoClient
@@ -74,7 +84,7 @@ func (db *mongodbConnectionType) InserManyDoc(docs []interface{}) error {
 	if !db.isconnected {
 		db.ConnectMongodb()
 	}
-	mongodb := util.GetConfig().Mongodb
+	mongodb := util.GetConfig()
 	database := mongodb["database"].(string)
 	collection := mongodb["collecton"].(string)
 	client := db.MongoClient
@@ -96,7 +106,7 @@ func (db *mongodbConnectionType) FindAllDoc() ([]interface{}, error) {
 	if !db.isconnected {
 		db.ConnectMongodb()
 	}
-	mongodb := util.GetConfig().Mongodb
+	mongodb := util.GetConfig()
 	database := mongodb["database"].(string)
 	collection := mongodb["collecton"].(string)
 	client := db.MongoClient

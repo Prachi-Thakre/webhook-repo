@@ -1,8 +1,10 @@
 package handlers
 
 import (
-	"fmt"
+	"encoding/json"
+	"github.com/webhook-repo/controllers"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/webhook-repo/utilities"
@@ -22,7 +24,8 @@ func WebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 func getData(w http.ResponseWriter, r *http.Request) (returnData utilities.ResponseJSON) {
 	// no request validation right now
-
+	returnData = controllers.GetAllData()
+	log.Println(returnData)
 	return
 }
 
@@ -32,10 +35,19 @@ func addData(w http.ResponseWriter, r *http.Request) (returnData utilities.Respo
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		utilities.ErrorResponse(&returnData, "Failure: unable to read")
+		log.Println(returnData)
+		return
+	}
+	playload := controllers.PlayLoad{}
+	err = json.Unmarshal(body, &playload)
+	if err != nil {
+		utilities.ErrorResponse(&returnData, "Failure: unable to parse")
+		log.Println(returnData)
 		return
 	}
 
-	fmt.Println(string(body))
+	returnData = controllers.AddData(playload)
+	log.Println(returnData)
 	return
 
 }
