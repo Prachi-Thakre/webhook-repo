@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"strings"
+	"time"
+
 	"github.com/spf13/cast"
 	"github.com/webhook-repo/models"
 	"github.com/webhook-repo/utilities"
-	"time"
 )
 
 func GetAllData() (returndata utilities.ResponseJSON) {
@@ -22,10 +24,12 @@ func AddData(playload PlayLoad) (returndata utilities.ResponseJSON) {
 	doc := models.Doc{}
 	doc.Author = playload.Repository.Owner.Login
 	doc.Time = time.Now()
-	if playload.PullRequest.ID == 0 {
+	if playload.PullRequest.ID != 0 {
 		doc.Action = "PULL_REQUEST"
-		doc.FromBranch = playload.PullRequest.Head.Repo.Name
-		doc.ToBranch = playload.PullRequest.Base.Repo.Name
+		comapre := strings.Split(playload.PullRequest.Head.Label, ":")
+		doc.FromBranch = comapre[len(comapre)-1]
+		base := strings.Split(playload.PullRequest.Base.Label, ":")
+		doc.ToBranch = base[len(base)-1]
 		doc.RequestId = cast.ToString(playload.PullRequest.ID)
 	} else {
 		doc.Action = "PUSH"

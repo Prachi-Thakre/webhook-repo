@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/webhook-repo/controllers"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/webhook-repo/controllers"
 
 	"github.com/webhook-repo/utilities"
 )
@@ -38,13 +39,11 @@ func addData(w http.ResponseWriter, r *http.Request) (returnData utilities.Respo
 		log.Println(returnData)
 		return
 	}
+
+	//log.Println(string(body))
 	playload := controllers.PlayLoad{}
-	err = json.Unmarshal(body, &playload)
-	if err != nil {
-		utilities.ErrorResponse(&returnData, "Failure: unable to parse")
-		log.Println(returnData)
-		return
-	}
+	_ = json.Unmarshal(body, &playload)
+	//log.Println(string(body))
 
 	returnData = controllers.AddData(playload)
 	log.Println(returnData)
